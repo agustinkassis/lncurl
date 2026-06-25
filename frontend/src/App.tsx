@@ -6,6 +6,8 @@ import { Graveyard } from "@/pages/Graveyard";
 import { About } from "@/pages/About";
 import { Blog } from "@/pages/Blog";
 import { BlogPost } from "@/pages/BlogPost";
+import { Privacy } from "@/pages/Privacy";
+import { Terms } from "@/pages/Terms";
 import { NotFound } from "@/pages/NotFound";
 
 function Nav() {
@@ -45,25 +47,35 @@ function Nav() {
 
 function Footer() {
   return (
-    <footer className="border-t border-border mt-12 py-6 text-center text-sm text-muted-foreground">
-      Powered by{" "}
-      <a
-        href="https://getalby.com/alby-hub?ref=lncurl"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-terminal hover:underline"
-      >
-        Alby Hub
-      </a>{" "}
-      +{" "}
-      <a
-        href="https://nwc.dev"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-terminal hover:underline"
-      >
-        Nostr Wallet Connect
-      </a>
+    <footer className="border-t border-border mt-12 py-6 text-center text-sm text-muted-foreground space-y-3">
+      <div>
+        Powered by{" "}
+        <a
+          href="https://getalby.com/alby-hub?ref=lncurl"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-terminal hover:underline"
+        >
+          Alby Hub
+        </a>{" "}
+        +{" "}
+        <a
+          href="https://nwc.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-terminal hover:underline"
+        >
+          Nostr Wallet Connect
+        </a>
+      </div>
+      <div className="flex justify-center gap-4 font-mono text-xs">
+        <Link to="/privacy" className="hover:text-foreground transition-colors">
+          Privacy
+        </Link>
+        <Link to="/terms" className="hover:text-foreground transition-colors">
+          Terms
+        </Link>
+      </div>
     </footer>
   );
 }
@@ -82,6 +94,8 @@ export default function App() {
               <Route path="/about" element={<About />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
