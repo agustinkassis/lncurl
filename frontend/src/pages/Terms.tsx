@@ -80,9 +80,9 @@ export function Terms() {
               hosting.
             </li>
             <li>
-              <strong className="text-foreground">Death.</strong> When a wallet's
-              balance can no longer cover the fee, the wallet is permanently
-              destroyed and moved to the{" "}
+              <strong className="text-foreground">Death.</strong> When a
+              wallet's balance can no longer cover the fee, the wallet is
+              permanently destroyed and moved to the{" "}
               <Link to="/graveyard" className="text-terminal hover:underline">
                 Graveyard
               </Link>
@@ -149,8 +149,8 @@ export function Terms() {
             <strong>"as available"</strong>, without warranties of any kind,
             express or implied. We do not guarantee uptime, durability of funds,
             or that the service will keep operating. It is experimental software
-            and may change, break, or shut down at any time. We may delete any or
-            all wallets, with or without notice.
+            and may change, break, or shut down at any time. We may delete any
+            or all wallets, with or without notice.
           </p>
         </CardContent>
       </Card>
@@ -167,9 +167,9 @@ export function Terms() {
             To the maximum extent permitted by law, lncurl.lol and its operators
             are not liable for any loss of funds, data, or profits, or for any
             indirect, incidental, or consequential damages arising from your use
-            of the service. Your maximum recoverable amount is limited to the
-            balance held in your wallet at the time of the claim. You use this
-            service entirely at your own risk.
+            of the service. We do not guarantee your funds to be available or
+            recoverable at any time. You use this service entirely at your own
+            risk and consider any funds you deposit to be immediately lost.
           </p>
         </CardContent>
       </Card>
@@ -183,10 +183,10 @@ export function Terms() {
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
           <p className="text-muted-foreground">
-            You must be of legal age to use this service in your jurisdiction and
-            responsible for complying with the laws that apply to you. We may
-            update these terms at any time; continued use after a change means
-            you accept the updated terms. See also our{" "}
+            You must be of legal age to use this service in your jurisdiction
+            and responsible for complying with the laws that apply to you. We
+            may update these terms at any time; continued use after a change
+            means you accept the updated terms. See also our{" "}
             <Link to="/privacy" className="text-terminal hover:underline">
               Privacy Policy
             </Link>
