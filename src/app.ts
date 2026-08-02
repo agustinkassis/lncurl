@@ -11,6 +11,7 @@ import { walletRoutes } from "./routes/wallet.js";
 import { feedRoutes } from "./routes/feed.js";
 import { statsRoutes } from "./routes/stats.js";
 import { graveyardRoutes } from "./routes/graveyard.js";
+import { setupRoutes } from "./routes/setup.js";
 import { startChargeLoop } from "./charge-loop.js";
 import { initNodeStats } from "./node-stats.js";
 
@@ -36,6 +37,7 @@ fastify.register(walletRoutes);
 fastify.register(feedRoutes);
 fastify.register(statsRoutes);
 fastify.register(graveyardRoutes);
+fastify.register(setupRoutes);
 
 // Serve frontend static files
 const frontendDist = path.join(__dirname, "..", "frontend", "dist");
