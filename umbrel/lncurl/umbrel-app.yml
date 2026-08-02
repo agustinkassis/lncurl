@@ -9,7 +9,7 @@ description: >-
   LNCurl provisions isolated Nostr Wallet Connect wallets through your own Alby Hub while keeping the existing public curl API and dashboard unchanged.
 
 
-  Configure APP_LNCURL_AUTH_TOKEN with a full-access Experimental API token from Alby Hub's Developer Settings. LNCurl never reads or mounts Alby Hub's database.
+  If no API token is provided through the environment, LNCurl prompts for a full-access token from Alby Hub's Developer Settings and stores it encrypted in its own database. LNCurl never reads or mounts Alby Hub's database.
 
 
   The package uses Alby Hub's internal Umbrel hostname and keeps all LNCurl data in its own persistent app directory.
