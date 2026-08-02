@@ -7,6 +7,7 @@ services:
       APP_PORT: 3000
       PROXY_AUTH_ADD: "true"
       PROXY_AUTH_WHITELIST: "/api/*,/.well-known/*,/llms.txt,/SKILL.md,/feed.xml"
+      PROXY_AUTH_BLACKLIST: "/api/setup,/api/setup/*"
 
   server:
     image: ghcr.io/agustinkassis/lncurl:1.0.0
@@ -19,6 +20,7 @@ services:
       DATABASE_URL: "file:/data/lncurl.db"
       ALBY_HUB_URL: "${APP_LNCURL_ALBY_HUB_URL:-http://albyhub_server_1:8080}"
       AUTH_TOKEN: "${APP_LNCURL_AUTH_TOKEN:-}"
+      LNCURL_ENCRYPTION_SECRET: "${APP_SEED}"
       DEV: "false"
       CHARGE_AMOUNT_SATS: "1"
       CHARGE_INTERVAL_MS: "3600000"
