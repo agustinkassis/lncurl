@@ -3,14 +3,14 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      APP_HOST: lncurl_server_1
+      APP_HOST: lawallet-lncurl_server_1
       APP_PORT: 3000
       PROXY_AUTH_ADD: "true"
       PROXY_AUTH_WHITELIST: "/api/*,/.well-known/*,/llms.txt,/SKILL.md,/feed.xml"
       PROXY_AUTH_BLACKLIST: "/api/setup,/api/setup/*"
 
   server:
-    image: ghcr.io/agustinkassis/lncurl:1.0.0
+    image: ghcr.io/agustinkassis/lncurl:1.0.1
     user: "1000:1000"
     volumes:
       - ${APP_DATA_DIR}/data:/data
