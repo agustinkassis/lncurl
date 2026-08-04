@@ -20,6 +20,8 @@ export function NodeStats({ stats }: NodeStatsProps) {
   //const vps = stats.vps ?? 0;
   const totalSpendable = stats.totalSpendable ?? 0;
   const onchainBalance = stats.onchainBalance ?? 0;
+  const liabilities = stats.totalWalletBalances ?? 0;
+  const assets = totalSpendable + onchainBalance;
 
   const totalLiquidity = liquidity.available + liquidity.used;
   const liquidityPercent =
@@ -79,6 +81,18 @@ export function NodeStats({ stats }: NodeStatsProps) {
               </div>
             </div>
           </TooltipProvider> */}
+          <div>
+            <div className="text-muted-foreground text-xs">Liabilities</div>
+            <div className="font-mono text-foreground font-bold">
+              {liabilities.toLocaleString()} sats
+            </div>
+          </div>
+          <div className="text-end">
+            <div className="text-muted-foreground text-xs">Assets</div>
+            <div className="font-mono text-foreground font-bold">
+              {assets.toLocaleString()} sats
+            </div>
+          </div>
           <div>
             <div className="text-muted-foreground text-xs">
               Lightning balance

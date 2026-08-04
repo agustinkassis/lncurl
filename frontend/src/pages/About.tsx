@@ -179,6 +179,20 @@ export function About() {
               takes one curl.
             </p>
           </div>
+
+          <div>
+            <p className="font-bold">How can I support lncurl.lol?</p>
+            <p className="text-muted-foreground">
+              Donations keep the node running. Send sats to{" "}
+              <a
+                href="lightning:lncurl@getalby.com"
+                className="text-terminal hover:underline"
+              >
+                lncurl@getalby.com
+              </a>
+              .
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

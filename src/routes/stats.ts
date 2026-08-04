@@ -15,6 +15,9 @@ export async function statsRoutes(fastify: FastifyInstance) {
       orderBy: { unlockedAt: "desc" },
     });
     const aliveCount = await prisma.wallet.count();
+    const walletBalances = await prisma.wallet.aggregate({
+      _sum: { lastKnownBalance: true },
+    });
 
     // At-risk wallets: those with lowest balance
     const atRisk = await prisma.wallet.findMany({
@@ -66,6 +69,7 @@ export async function statsRoutes(fastify: FastifyInstance) {
       liquidity,
       totalSpendable,
       onchainBalance: onchainTotal,
+      totalWalletBalances: walletBalances._sum.lastKnownBalance ?? 0,
       routing: { totalForwarded: 0, forwardsCount: 0 }, // TODO: populate when Hub API supports it
       nodeAlias,
       nodePubkey,
