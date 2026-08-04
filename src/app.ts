@@ -12,8 +12,15 @@ import { feedRoutes } from "./routes/feed.js";
 import { statsRoutes } from "./routes/stats.js";
 import { graveyardRoutes } from "./routes/graveyard.js";
 import { setupRoutes } from "./routes/setup.js";
+import {
+  isFromUmbrelAppProxy,
+  settingsRoutes,
+  unsafePublicSettingsEnabled,
+} from "./routes/settings.js";
 import { startChargeLoop } from "./charge-loop.js";
 import { initNodeStats } from "./node-stats.js";
+import { loadRuntimeSettings } from "./settings.js";
+import { rescheduleRateLimitCleanup } from "./rate-limit.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -38,6 +45,7 @@ fastify.register(feedRoutes);
 fastify.register(statsRoutes);
 fastify.register(graveyardRoutes);
 fastify.register(setupRoutes);
+if (unsafePublicSettingsEnabled()) fastify.register(settingsRoutes);
 
 // Serve frontend static files
 const frontendDist = path.join(__dirname, "..", "frontend", "dist");
@@ -50,6 +58,15 @@ if (fs.existsSync(frontendDist)) {
 
   // SPA fallback — serve index.html for non-API, non-file routes
   fastify.setNotFoundHandler(async (request, reply) => {
+    const pathname = request.url.split("?")[0].replace(/\/$/, "") || "/";
+    if (pathname === "/settings") {
+      if (!unsafePublicSettingsEnabled()) {
+        return reply.status(404).send({ error: "Not found" });
+      }
+      if (!(await isFromUmbrelAppProxy(request))) {
+        return reply.status(403).send({ error: "Umbrel app proxy required." });
+      }
+    }
     if (
       request.url.startsWith("/api/") ||
       request.url === "/llms.txt"
@@ -104,6 +121,8 @@ if (fs.existsSync(frontendDist)) {
 
 const start = async () => {
   try {
+    await loadRuntimeSettings();
+    rescheduleRateLimitCleanup();
     initNodeStats();
     await startChargeLoop();
 
