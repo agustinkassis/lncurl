@@ -3,7 +3,7 @@ id: lawallet-lncurl
 name: LNCurl
 tagline: Create isolated Lightning wallets with one curl
 category: bitcoin
-version: "1.0.5"
+version: "1.0.6"
 port: 59001
 description: >-
   LNCurl provisions isolated Nostr Wallet Connect wallets through your own Alby Hub while keeping the existing public curl API and dashboard unchanged.
