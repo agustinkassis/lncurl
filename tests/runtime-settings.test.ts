@@ -3,6 +3,7 @@ import test from "node:test";
 import Fastify from "fastify";
 import { validateRuntimeSettings } from "../src/settings.js";
 import {
+  configRoutes,
   settingsRoutes,
   unsafePublicSettingsEnabled,
 } from "../src/routes/settings.js";
@@ -27,6 +28,21 @@ test("public settings default to disabled", () => {
   assert.equal(unsafePublicSettingsEnabled(), false);
   process.env.UNSAFE_PUBLIC_SETTINGS = "true";
   assert.equal(unsafePublicSettingsEnabled(), true);
+  delete process.env.UNSAFE_PUBLIC_SETTINGS;
+});
+
+test("public config exposes only the settings feature flag", async () => {
+  delete process.env.UNSAFE_PUBLIC_SETTINGS;
+  const app = Fastify();
+  await app.register(configRoutes);
+  assert.deepEqual((await app.inject({ url: "/api/config" })).json(), {
+    unsafePublicSettings: false,
+  });
+  process.env.UNSAFE_PUBLIC_SETTINGS = "true";
+  assert.deepEqual((await app.inject({ url: "/api/config" })).json(), {
+    unsafePublicSettings: true,
+  });
+  await app.close();
   delete process.env.UNSAFE_PUBLIC_SETTINGS;
 });
 
