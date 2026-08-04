@@ -51,8 +51,9 @@ function Footer() {
   const [settingsEnabled, setSettingsEnabled] = useState(false);
 
   useEffect(() => {
-    fetch("/api/settings")
-      .then((response) => setSettingsEnabled(response.ok))
+    fetch("/api/config")
+      .then((response) => response.json())
+      .then((config) => setSettingsEnabled(config.unsafePublicSettings === true))
       .catch(() => {});
   }, []);
 

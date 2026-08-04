@@ -10,7 +10,7 @@ services:
       PROXY_AUTH_BLACKLIST: "/api/setup,/api/setup/*,/settings,/settings/*,/api/settings,/api/settings/*"
 
   server:
-    image: ghcr.io/agustinkassis/lncurl:1.0.3
+    image: ghcr.io/agustinkassis/lncurl:1.0.4
     user: "1000:1000"
     volumes:
       - ${APP_DATA_DIR}/data:/data

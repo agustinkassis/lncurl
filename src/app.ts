@@ -13,6 +13,7 @@ import { statsRoutes } from "./routes/stats.js";
 import { graveyardRoutes } from "./routes/graveyard.js";
 import { setupRoutes } from "./routes/setup.js";
 import {
+  configRoutes,
   isFromUmbrelAppProxy,
   settingsRoutes,
   unsafePublicSettingsEnabled,
@@ -45,6 +46,7 @@ fastify.register(feedRoutes);
 fastify.register(statsRoutes);
 fastify.register(graveyardRoutes);
 fastify.register(setupRoutes);
+fastify.register(configRoutes);
 if (unsafePublicSettingsEnabled()) fastify.register(settingsRoutes);
 
 // Serve frontend static files
