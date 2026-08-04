@@ -3,7 +3,7 @@ version: "3.7"
 services:
   app_proxy:
     environment:
-      APP_HOST: lawallet-lncurl_server_1
+      APP_HOST: server
       APP_PORT: 3000
       PROXY_AUTH_ADD: "true"
       PROXY_AUTH_WHITELIST: "/*"
@@ -23,7 +23,7 @@ services:
       LNCURL_ENCRYPTION_SECRET: "${APP_SEED}"
       DEV: "false"
       UNSAFE_PUBLIC_SETTINGS: "true"
-      UMBREL_APP_PROXY_HOST: "lncurl_app_proxy_1"
+      UMBREL_APP_PROXY_HOST: "app_proxy"
       CHARGE_AMOUNT_SATS: "1"
       CHARGE_INTERVAL_MS: "3600000"
       GRACE_PERIOD_SECS: "3600"
