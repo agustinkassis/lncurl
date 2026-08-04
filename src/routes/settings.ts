@@ -30,6 +30,12 @@ export async function isFromUmbrelAppProxy(request: FastifyRequest): Promise<boo
   }
 }
 
+export async function configRoutes(fastify: FastifyInstance) {
+  fastify.get("/api/config", async () => ({
+    unsafePublicSettings: unsafePublicSettingsEnabled(),
+  }));
+}
+
 export async function settingsRoutes(fastify: FastifyInstance) {
   fastify.addHook("preHandler", async (request, reply) => {
     if (!(await isFromUmbrelAppProxy(request))) {
