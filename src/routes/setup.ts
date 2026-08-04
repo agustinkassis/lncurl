@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import { validateAlbyToken } from "../hub.js";
 import { getAlbyToken, saveAlbyToken } from "../settings.js";
 
-function isSameOrigin(request: FastifyRequest): boolean {
+export function isSameOrigin(request: FastifyRequest): boolean {
   const origin = request.headers.origin;
   if (!origin || !request.headers.host) return false;
   try {
