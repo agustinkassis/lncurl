@@ -34,6 +34,7 @@ export interface Stats {
   liquidity: { available: number; used: number; channels: number };
   totalSpendable: number;
   onchainBalance: number;
+  totalWalletBalances: number;
   routing: { totalForwarded: number; forwardsCount: number };
   nodeAlias: string | null;
   nodePubkey: string | null;
