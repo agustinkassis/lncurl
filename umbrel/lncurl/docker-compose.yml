@@ -2,17 +2,17 @@ version: "3.7"
 
 services:
   app_proxy:
-    container_name: lawallet-lncurl_app_proxy_1
+    container_name: lncurl_app_proxy_1
     environment:
-      APP_HOST: lawallet-lncurl_server_1
+      APP_HOST: lncurl_server_1
       APP_PORT: 3000
       PROXY_AUTH_ADD: "true"
       PROXY_AUTH_WHITELIST: "/*"
       PROXY_AUTH_BLACKLIST: "/api/setup,/api/setup/*,/settings,/settings/*,/api/settings,/api/settings/*"
 
   server:
-    container_name: lawallet-lncurl_server_1
-    image: ghcr.io/agustinkassis/lncurl:1.0.4
+    container_name: lncurl_server_1
+    image: ghcr.io/rolznz/lncurl:0.1.0
     user: "1000:1000"
     volumes:
       - ${APP_DATA_DIR}/data:/data
@@ -25,7 +25,7 @@ services:
       LNCURL_ENCRYPTION_SECRET: "${APP_SEED}"
       DEV: "false"
       UNSAFE_PUBLIC_SETTINGS: "true"
-      UMBREL_APP_PROXY_HOST: "lawallet-lncurl_app_proxy_1"
+      UMBREL_APP_PROXY_HOST: "lncurl_app_proxy_1"
       CHARGE_AMOUNT_SATS: "1"
       CHARGE_INTERVAL_MS: "3600000"
       GRACE_PERIOD_SECS: "3600"

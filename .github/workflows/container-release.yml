@@ -45,8 +45,8 @@ jobs:
           provenance: mode=max
           sbom: true
           tags: |
-            ghcr.io/agustinkassis/lncurl:${{ steps.version.outputs.value }}
-            ghcr.io/agustinkassis/lncurl:latest
+            ghcr.io/${{ github.repository_owner }}/lncurl:${{ steps.version.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/lncurl:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -57,5 +57,5 @@ jobs:
         run: |
           echo "### Published image" >> "$GITHUB_STEP_SUMMARY"
           echo '```text' >> "$GITHUB_STEP_SUMMARY"
-          echo "ghcr.io/agustinkassis/lncurl:${IMAGE_VERSION}@${IMAGE_DIGEST}" >> "$GITHUB_STEP_SUMMARY"
+          echo "ghcr.io/${{ github.repository_owner }}/lncurl:${IMAGE_VERSION}@${IMAGE_DIGEST}" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
