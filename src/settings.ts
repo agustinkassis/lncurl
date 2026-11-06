@@ -15,6 +15,8 @@ export type RuntimeSettings = {
   gracePeriodSeconds: number;
   rateLimitPerHour: number;
   rateLimitCleanupMs: number;
+  /** Bearer key that skips the per-IP mint limit (blank = off). For a server-side integrator whose callers all share one egress IP. */
+  trustedCallerKey: string;
 };
 
 function envInteger(name: string, fallback: number): number {
@@ -30,6 +32,7 @@ const runtimeDefaults: RuntimeSettings = {
   gracePeriodSeconds: envInteger("GRACE_PERIOD_SECS", 3_600),
   rateLimitPerHour: envInteger("RATE_LIMIT_PER_HOUR", 10),
   rateLimitCleanupMs: envInteger("RATE_LIMIT_CLEANUP_MS", 600_000),
+  trustedCallerKey: process.env.TRUSTED_CALLER_KEY?.trim() ?? "",
 };
 
 let runtimeSettings = runtimeDefaults;
@@ -101,6 +104,15 @@ function boundedInteger(
   return value as number;
 }
 
+function trustedCallerKey(value: unknown): string {
+  // Settings saved before this field existed have no key: treat as off.
+  const key = typeof value === "string" ? value.trim() : value === undefined ? "" : null;
+  if (key === null || (key !== "" && key.length < 32)) {
+    throw new Error("Trusted caller key must be blank or at least 32 characters.");
+  }
+  return key;
+}
+
 export function validateRuntimeSettings(value: unknown): RuntimeSettings {
   const settings = value as Partial<RuntimeSettings> | null;
   if (!settings || typeof settings !== "object") {
@@ -112,6 +124,7 @@ export function validateRuntimeSettings(value: unknown): RuntimeSettings {
     gracePeriodSeconds: boundedInteger(settings.gracePeriodSeconds, "Grace period", 0, 2_592_000),
     rateLimitPerHour: boundedInteger(settings.rateLimitPerHour, "Rate limit", 1, 10_000),
     rateLimitCleanupMs: boundedInteger(settings.rateLimitCleanupMs, "Rate-limit cleanup", 60_000, 86_400_000),
+    trustedCallerKey: trustedCallerKey(settings.trustedCallerKey),
   };
 }
 

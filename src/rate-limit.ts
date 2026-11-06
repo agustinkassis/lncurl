@@ -1,3 +1,4 @@
+import { createHash, timingSafeEqual } from "node:crypto";
 import { getRuntimeSettings } from "./settings.js";
 
 const WINDOW_MS = 60 * 60 * 1000; // 1 hour
@@ -21,6 +22,17 @@ export function checkRateLimit(ip: string): { allowed: boolean; remaining: numbe
   timestamps.push(now);
   ipTimestamps.set(ip, timestamps);
   return { allowed: true, remaining: maxWallets - timestamps.length };
+}
+
+const sha256 = (value: string) => createHash("sha256").update(value).digest();
+
+/** True when `Authorization: Bearer <key>` matches the configured trusted caller key. */
+export function isTrustedCaller(
+  authorization: string | undefined,
+  key: string = getRuntimeSettings().trustedCallerKey,
+): boolean {
+  if (!key || !authorization?.startsWith("Bearer ")) return false;
+  return timingSafeEqual(sha256(authorization.slice(7).trim()), sha256(key));
 }
 
 function cleanupStaleEntries() {
