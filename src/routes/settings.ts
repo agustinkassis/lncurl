@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { lookup } from "node:dns/promises";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { rescheduleChargeLoop } from "../charge-loop.js";
@@ -17,9 +18,36 @@ function normalizeAddress(address: string): string {
   return address.replace(/^::ffff:/, "");
 }
 
-export async function isFromUmbrelAppProxy(request: FastifyRequest): Promise<boolean> {
+/** IPv4 default gateway from a /proc/net/route table: inside a container, the Docker bridge (the host). */
+export function defaultGateway(routeTable: string): string | null {
+  for (const line of routeTable.split("\n").slice(1)) {
+    const [, destination, gateway] = line.trim().split(/\s+/);
+    if (destination !== "00000000" || !gateway) continue;
+    const n = parseInt(gateway, 16);
+    return [n & 255, (n >>> 8) & 255, (n >>> 16) & 255, n >>> 24].join(".");
+  }
+  return null;
+}
+
+function containerGateway(): string | null {
+  try {
+    return defaultGateway(readFileSync("/proc/net/route", "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+export async function isFromUmbrelAppProxy(
+  request: FastifyRequest,
+  gateway: string | null = containerGateway(),
+): Promise<boolean> {
+  if (!unsafePublicSettingsEnabled()) return false;
+  // Newer umbrelOS drops the per-app app_proxy container: umbreld's built-in
+  // gateway proxies from the host and enforces PROXY_AUTH_BLACKLIST itself
+  // (302 to app-auth), so its requests reach us from the bridge gateway.
+  if (gateway && normalizeAddress(request.ip) === gateway) return true;
   const host = process.env.UMBREL_APP_PROXY_HOST?.trim();
-  if (!unsafePublicSettingsEnabled() || !host) return false;
+  if (!host) return false;
   try {
     const addresses = await lookup(host, { all: true });
     return addresses.some(

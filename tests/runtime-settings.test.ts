@@ -5,6 +5,8 @@ import { validateRuntimeSettings } from "../src/settings.js";
 import { isTrustedCaller } from "../src/rate-limit.js";
 import {
   configRoutes,
+  defaultGateway,
+  isFromUmbrelAppProxy,
   settingsRoutes,
   unsafePublicSettingsEnabled,
 } from "../src/routes/settings.js";
@@ -81,4 +83,26 @@ test("settings API only accepts the configured Umbrel proxy", async () => {
   await app.close();
   delete process.env.UNSAFE_PUBLIC_SETTINGS;
   delete process.env.UMBREL_APP_PROXY_HOST;
+});
+
+const ROUTES = `Iface\tDestination\tGateway \tFlags\tRefCnt\tUse\tMetric\tMask
+eth0\t00000000\t010015AC\t0003\t0\t0\t0\t00000000
+eth0\t000015AC\t00000000\t0001\t0\t0\t0\t0000FFFF
+`;
+
+test("reads the container default gateway from /proc/net/route", () => {
+  assert.equal(defaultGateway(ROUTES), "172.21.0.1");
+  assert.equal(defaultGateway("Iface\tDestination\tGateway\n"), null);
+});
+
+test("trusts the umbrelOS gateway only when public settings are enabled", async () => {
+  delete process.env.UMBREL_APP_PROXY_HOST;
+  const from = (ip: string) => ({ ip }) as never;
+  delete process.env.UNSAFE_PUBLIC_SETTINGS;
+  assert.equal(await isFromUmbrelAppProxy(from("10.21.0.1"), "10.21.0.1"), false);
+  process.env.UNSAFE_PUBLIC_SETTINGS = "true";
+  assert.equal(await isFromUmbrelAppProxy(from("::ffff:10.21.0.1"), "10.21.0.1"), true);
+  assert.equal(await isFromUmbrelAppProxy(from("10.21.0.7"), "10.21.0.1"), false);
+  assert.equal(await isFromUmbrelAppProxy(from("10.21.0.1"), null), false);
+  delete process.env.UNSAFE_PUBLIC_SETTINGS;
 });
