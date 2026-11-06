@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { createApp, createLightningAddress, updateAppName } from "../hub.js";
 import { generateWalletName } from "../names.js";
 import { sanitizeEpitaph, getRandomEpitaph } from "../epitaphs.js";
-import { checkRateLimit } from "../rate-limit.js";
+import { checkRateLimit, isTrustedCaller } from "../rate-limit.js";
 import { prisma } from "../db.js";
 import { emitActivity } from "../activity.js";
 import { getRuntimeSettings } from "../settings.js";
@@ -13,7 +13,11 @@ export async function walletRoutes(fastify: FastifyInstance) {
       (request.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
       request.ip;
 
-    const { allowed, remaining } = checkRateLimit(ip);
+    // A trusted integrator mints on behalf of many users from one egress IP,
+    // so it skips the per-IP limit instead of sharing one IP's budget.
+    const { allowed, remaining } = isTrustedCaller(request.headers.authorization)
+      ? { allowed: true, remaining: null }
+      : checkRateLimit(ip);
     if (!allowed) {
       reply
         .status(429)
@@ -83,7 +87,7 @@ export async function walletRoutes(fastify: FastifyInstance) {
 
     const nwcUri = `${newApp.pairingUri}&lud16=${name}@getalby.com`;
 
-    reply.header("X-RateLimit-Remaining", remaining);
+    if (remaining !== null) reply.header("X-RateLimit-Remaining", remaining);
     reply.type("text/plain").send(nwcUri);
   }
 

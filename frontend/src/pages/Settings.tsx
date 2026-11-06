@@ -9,10 +9,11 @@ type RuntimeSettings = {
   gracePeriodSeconds: number;
   rateLimitPerHour: number;
   rateLimitCleanupMs: number;
+  trustedCallerKey: string;
 };
 
 const fields: {
-  key: keyof RuntimeSettings;
+  key: Exclude<keyof RuntimeSettings, "trustedCallerKey">;
   label: string;
   description: string;
   min: number;
@@ -87,6 +88,19 @@ export function Settings() {
                 <span className="block text-xs text-muted-foreground">{field.description}</span>
               </label>
             ))}
+            <label className="block space-y-2 font-mono text-sm">
+              <span>Trusted caller key</span>
+              <Input
+                type="password"
+                autoComplete="off"
+                value={settings.trustedCallerKey}
+                onChange={(event) => setSettings({ ...settings, trustedCallerKey: event.target.value })}
+              />
+              <span className="block text-xs text-muted-foreground">
+                Callers sending <code>Authorization: Bearer &lt;key&gt;</code> skip the per-IP rate limit. Blank = off; at
+                least 32 characters (e.g. <code>openssl rand -hex 32</code>).
+              </span>
+            </label>
             {message && <p className="text-sm text-muted-foreground">{message}</p>}
             <Button type="submit" disabled={saving}>
               {saving ? "Saving..." : "Save settings"}

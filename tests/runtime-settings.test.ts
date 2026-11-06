@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import Fastify from "fastify";
 import { validateRuntimeSettings } from "../src/settings.js";
+import { isTrustedCaller } from "../src/rate-limit.js";
 import {
   configRoutes,
   settingsRoutes,
@@ -14,6 +15,7 @@ const valid = {
   gracePeriodSeconds: 3_600,
   rateLimitPerHour: 10,
   rateLimitCleanupMs: 600_000,
+  trustedCallerKey: "",
 };
 
 test("runtime settings accept safe integers and reject unsafe values", () => {
@@ -21,6 +23,24 @@ test("runtime settings accept safe integers and reject unsafe values", () => {
   assert.throws(() => validateRuntimeSettings({ ...valid, chargeAmountSats: 0 }));
   assert.throws(() => validateRuntimeSettings({ ...valid, chargeIntervalMs: 1_000 }));
   assert.throws(() => validateRuntimeSettings({ ...valid, rateLimitPerHour: 1.5 }));
+});
+
+test("trusted caller key is optional, defaults off, and must be long", () => {
+  const { trustedCallerKey: _omit, ...legacy } = valid;
+  assert.equal(validateRuntimeSettings(legacy).trustedCallerKey, "");
+  assert.throws(() => validateRuntimeSettings({ ...valid, trustedCallerKey: "short" }));
+  assert.throws(() => validateRuntimeSettings({ ...valid, trustedCallerKey: 42 }));
+  const key = "k".repeat(32);
+  assert.equal(validateRuntimeSettings({ ...valid, trustedCallerKey: ` ${key} ` }).trustedCallerKey, key);
+});
+
+test("only the exact bearer key is trusted", () => {
+  const key = "k".repeat(32);
+  assert.equal(isTrustedCaller(`Bearer ${key}`, key), true);
+  assert.equal(isTrustedCaller(`Bearer ${key}x`, key), false);
+  assert.equal(isTrustedCaller(key, key), false);
+  assert.equal(isTrustedCaller(undefined, key), false);
+  assert.equal(isTrustedCaller("Bearer ", ""), false);
 });
 
 test("public settings default to disabled", () => {
